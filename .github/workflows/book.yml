@@ -29,12 +29,12 @@ jobs:
       - name: Build plonk book
         run: mdbook build plonk-book/
 
-      - name: Move book to docs
-        run: |
-          mkdir ./docs && mv ./plonk-book/book/* ./docs
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Make release
+        uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ github.ref_name == 'master' && 'latest' || github.ref_name }}
+          # mark as prerelease if not main branch
+          prerelease: ${{ github.ref_name != 'main' }}
+          title: ${{ github.ref_name == 'main' && 'PDF' || github.ref_name }}
+          files: ./plonk-book/book/*.pdf
